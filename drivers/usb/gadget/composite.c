@@ -2079,6 +2079,11 @@ void composite_disconnect(struct usb_gadget *gadget)
 	/* REVISIT:  should we have config and device level
 	 * disconnect callbacks?
 	 */
+	if(!cdev) {
+		printk("%s: Enable UDC First\n",__func__);
+	return;
+	}
+
 	spin_lock_irqsave(&cdev->lock, flags);
 	cdev->suspended = 0;
 	if (cdev->config)
@@ -2336,6 +2341,12 @@ void composite_suspend(struct usb_gadget *gadget)
 	 * suspend/resume callbacks?
 	 */
 	DBG(cdev, "suspend\n");
+
+	if(!cdev) {
+		printk("%s: Enable UDC First\n",__func__);
+		return;
+	}
+
 	if (cdev->config) {
 		list_for_each_entry(f, &cdev->config->functions, list) {
 			if (f->suspend)
@@ -2361,6 +2372,12 @@ void composite_resume(struct usb_gadget *gadget)
 	 * suspend/resume callbacks?
 	 */
 	DBG(cdev, "resume\n");
+
+	if(!cdev) {
+		printk("%s: Enable UDC First\n",__func__);
+		return;
+	}
+
 	if (cdev->driver->resume)
 		cdev->driver->resume(cdev);
 	if (cdev->config) {

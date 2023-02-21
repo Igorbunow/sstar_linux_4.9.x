@@ -2306,6 +2306,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
 	       drv->dev_name,
 	       drv->tty_driver->name_base + port->line,
 	       address, port->irq, port->uartclk / 16, uart_type(port));
+
 }
 
 static void
