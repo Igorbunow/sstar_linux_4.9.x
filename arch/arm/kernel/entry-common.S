@@ -270,7 +270,7 @@ local_restart:
 9001:
 	sub	lr, lr, #4
 	str	lr, [sp, #S_PC]
-	b	ret_fast_syscall
+	b	__ret_fast_syscall
 #endif
 ENDPROC(vector_swi)
 
