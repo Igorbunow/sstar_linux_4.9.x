@@ -204,9 +204,13 @@ static int vmap_page_range_noflush(unsigned long start, unsigned long end,
 
 	return nr;
 }
-
+#ifdef CONFIG_MSTAR_MMAHEAP 
+int vmap_page_range(unsigned long start, unsigned long end,
+			   pgprot_t prot, struct page **pages)
+#else
 static int vmap_page_range(unsigned long start, unsigned long end,
 			   pgprot_t prot, struct page **pages)
+#endif
 {
 	int ret;
 
@@ -214,6 +218,10 @@ static int vmap_page_range(unsigned long start, unsigned long end,
 	flush_cache_vmap(start, end);
 	return ret;
 }
+
+#ifdef CONFIG_MSTAR_MMAHEAP
+EXPORT_SYMBOL(vmap_page_range);
+#endif
 
 int is_vmalloc_or_module_addr(const void *x)
 {
@@ -497,7 +505,7 @@ overflow:
 		}
 	}
 
-	if (printk_ratelimit())
+	if (printk_ratelimit() && !(gfp_mask & __GFP_NOWARN))
 		pr_warn("vmap allocation for size %lu failed: use vmalloc=<size> to increase size\n",
 			size);
 	kfree(va);
@@ -1431,14 +1439,14 @@ struct vm_struct *get_vm_area(unsigned long size, unsigned long flags)
 				  NUMA_NO_NODE, GFP_KERNEL,
 				  __builtin_return_address(0));
 }
-
+EXPORT_SYMBOL(get_vm_area);
 struct vm_struct *get_vm_area_caller(unsigned long size, unsigned long flags,
 				const void *caller)
 {
 	return __get_vm_area_node(size, 1, flags, VMALLOC_START, VMALLOC_END,
 				  NUMA_NO_NODE, GFP_KERNEL, caller);
 }
-
+EXPORT_SYMBOL(get_vm_area_caller);
 /**
  *	find_vm_area  -  find a continuous kernel virtual area
  *	@addr:		base address
